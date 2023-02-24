@@ -318,10 +318,10 @@ def timer2(func):
     def wrapper(*args, **kwargs):
 
         start = time.time()
-        func(*args, **kwargs)
+        result, mcs_result = func(*args, **kwargs)
         end = time.time()
         print('Time used: {} seconds'.format(end - start))
-
+        return result, mcs_result
     return wrapper
 
 
@@ -330,22 +330,28 @@ def main(observation, run_times, num_generations, run_type, cross_validation, ot
     start = time.time()
     print('HAR model start')
     print('*'*50)
+
     label_list = ['HAR', 'HAR-SVR1', 'HAR-SVR2', 'HAR-SVR3', 'HAR-SVR4', 'HAR-SVR5', 'HAR-SVR6', 'HAR-SVR7', 'HAR-SVR8', 'HAR-SVR9', 'HAR-SVR10']
     model_type = [1, 2, 3]  # TODO：这里是用来修改输入的model type 数量的
     model_label = label_list[:len(model_type)+1]  # model 的label
+
     if len(model_label) != len(model_type)+1:
-        raise ValueError('model_label is not equal to model_type')
-    har_result, use_time = run_har_model(RV=RV, other_y=other_y, other_type=other_type, observation=observation)
-    if other_type is None:
+        raise ValueError('model_label length is not equal to model_type length.')
+
+    har_result, use_time = run_har_model(RV=RV, other_y=other_y, other_type=other_type, observation=observation)  # 计算har的结果
+    if other_type is None:  # 如果没有输入其他的risk measure，则默认为RV
         risk_measure_har = 'RV'
     else:
         risk_measure_har = other_type
+
     har_result.to_csv('Result/{}/{}/{}/{}_har_result.csv'.format(risk_measure_har, run_type, cross_validation, run_type))
     print('HAR model end and time used is {} seconds'.format(time.time()-start))
     print('*'*50)
     print('HAR-SVR model start')
-    all_result = pd.DataFrame()  # 用来存放所有模型的预测结果的每日的mean，对于har model则是直接存放结果
+
+    all_result = pd.DataFrame()  # 用来存放在一种risk measure下的所有模型的预测结果的每日的mean，对于har model则是直接存放结果
     all_result = pd.concat([all_result, har_result], axis=1)
+
     for i in model_type:
 
         forecasting_result, statistics_result, maximum_val, minimum_val = run_n_times(n=run_times, model_type=i,\
@@ -393,12 +399,16 @@ def main(observation, run_times, num_generations, run_type, cross_validation, ot
     print('Two type HAR-SVR model both end and time used is {} seconds'.format(time.time()-start))
     plt.show()
 
+    return all_result, MCS_result
+
 
 if __name__ == '__main__':
 
     measure_list = [None, 'RV+', 'RV-', 'SJ']
     # 这趟运行的是用来干什么的，test代表这趟只是随便跑的测试，0915表示跑的是2009-2015的data
     run_type = '0910'
+    all_rm_result = pd.DataFrame()  # 用来把所有的测度下的模型的预测结果都放在一起，然后用MCS来比较不同风险测度下一共12个模型的预测能力
+    MCS_result_all = pd.DataFrame()  # 用来把所有的MCS结果放在一起保存
 
     for risk_measure in measure_list:
         print('-' * 50)
@@ -408,7 +418,6 @@ if __name__ == '__main__':
         print('Loading data...')
         dataset_interval = ['0910', '0915', '1621', '0921']
 
-        # 这趟运行的是用来干什么的，test代表这趟只是随便跑的测试，0915表示跑的是2009-2015的data
         run_times_out = 1
         num_generations_out = 1
         cross_validation_out = 'No split'
@@ -436,10 +445,23 @@ if __name__ == '__main__':
 
         print(f'Data loaded. Loading data used {time.time() - start_time} seconds.')
         print('-' * 50)
-        main(other_y=other_y, other_type=risk_measure, observation=observation, run_times=run_times_out, \
+
+        result, mcs_result = main(other_y=other_y, other_type=risk_measure, observation=observation, run_times=run_times_out, \
              num_generations=num_generations_out, cross_validation=cross_validation_out, run_type=run_type)
 
+        all_rm_result = pd.concat([all_rm_result, result], axis=1)
+        MCS_result_all = pd.concat([MCS_result_all, mcs_result], axis=1)
+
         del observation
+
+    all_rm_result.to_csv('Result/allresult/all_rm_result.csv')
+    MCS_result_all.to_csv('Result/allresult/MCS_result_all.csv')
+
+    mcs_result_all = tm.main(all_rm_result, RV)
+    print('mcs_result_all is {}'.format(mcs_result_all))
+
+    mcs_result_all.to_csv('Result/allresult/mcs_result_all.csv')
+
 
 
 

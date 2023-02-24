@@ -197,7 +197,7 @@ def calculRVplusminus(logreturn_positive, logreturn_minus, i):
     rv_minus.columns = ['RV-']
     sj.columns = ['SJ']
 
-    return rv_positive,rv_minus,sj
+    return rv_positive, rv_minus, sj
 
 #TODO：测试新方法的正确性
 '''计算的方法不一定有问题，但是要写09-15的data和16-21的data的区分'''
