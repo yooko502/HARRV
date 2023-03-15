@@ -11,6 +11,8 @@ from harmodel import HARX
 import warnings
 import time
 import test_MCS as tm
+import os
+import shutil
 warnings.filterwarnings("ignore")
 ## TODO： 增加几行代码，让保存结果的时候可以存在不同的文件夹里 让保存的结果不那么乱
 
@@ -404,63 +406,76 @@ def main(observation, run_times, num_generations, run_type, cross_validation, ot
 
 if __name__ == '__main__':
 
+
     measure_list = [None, 'RV+', 'RV-', 'SJ']
     # 这趟运行的是用来干什么的，test代表这趟只是随便跑的测试，0915表示跑的是2009-2015的data
     run_type = '0910'
     all_rm_result = pd.DataFrame()  # 用来把所有的测度下的模型的预测结果都放在一起，然后用MCS来比较不同风险测度下一共12个模型的预测能力
     MCS_result_all = pd.DataFrame()  # 用来把所有的MCS结果放在一起保存
+    observationlist = [300]
+    run_times_out = 1
+    num_generations_out = 1
+    dataset_interval = ['0910', '0915', '1621', '0921']
+    cross_validation_out = 'No split'
+    # TODO：添加一个方法来进行不同的observation循环
+    for observation in observationlist:
+        print(f"Running observation {observation}...")
+        observation_folder = f"observation{observation}"
 
-    for risk_measure in measure_list:
-        print('-' * 50)
-        start_time = time.time()
-        print('Start to run the test program for HAR-SVR model.')
-        print('-' * 50)
-        print('Loading data...')
-        dataset_interval = ['0910', '0915', '1621', '0921']
+        if not os.path.exists(f"{observation_folder}"):
+            os.makedirs(f"{observation_folder}")
+            shutil.copytree("Result", f"{observation_folder}/Result")
 
-        run_times_out = 1
-        num_generations_out = 1
-        cross_validation_out = 'No split'
-        # ------实际运行时候的指令
-        all_data = bf.getdata('0910')
-        all_data = bf.concatRV(all_data)
-        if risk_measure is None:
-            RV = bf.calculRV(all_data, interval='0915')
-            other_y = None
-        else:
-            other_y, RV = bf.calculRV(all_data, interval='0915', type=risk_measure)
-            other_y.index = pd.to_datetime(other_y.index, format='%Y%m%d')
-        # ------实际运行时候的指令
-        # ----------------test用的指令----------------
-        # RV = pd.read_csv('data/test_data/test_data.csv', index_col=0)  # data数：100
-        # ----------------test用的指令----------------
-        RV.index = pd.to_datetime(RV.index, format='%Y%m%d')
-        observation = 450
+        current_dir = os.getcwd()
+        os.chdir(os.path.join(current_dir, observation_folder))  # 切换到次一级的目录
 
-    # TODO:增加concat data的功能，使其能够计算SJ，RV+，RV-，RV
-    # 功能加完了，就是不知道对不对，测试也通过了
+        for risk_measure in measure_list:
+            print('-' * 50)
+            start_time = time.time()
+            print('Start to run the test program for HAR-SVR model.')
+            print('-' * 50)
+            print('Loading data...')
 
-        if observation > len(RV):
-            raise ValueError('The observation is larger than the length of RV.')
+            # ------实际运行时候的指令
+            all_data = bf.getdata('0910')
+            all_data = bf.concatRV(all_data)
 
-        print(f'Data loaded. Loading data used {time.time() - start_time} seconds.')
-        print('-' * 50)
+            if risk_measure is None:
+                RV = bf.calculRV(all_data, interval='0915')
+                other_y = None
+            else:
+                other_y, RV = bf.calculRV(all_data, interval='0915', type=risk_measure)
+                other_y.index = pd.to_datetime(other_y.index, format='%Y%m%d')
+            # ------实际运行时候的指令
+            # ----------------test用的指令----------------
+            # RV = pd.read_csv('data/test_data/test_data.csv', index_col=0)  # data数：100
+            # ----------------test用的指令----------------
+            RV.index = pd.to_datetime(RV.index, format='%Y%m%d')
 
-        result, mcs_result = main(other_y=other_y, other_type=risk_measure, observation=observation, run_times=run_times_out, \
-             num_generations=num_generations_out, cross_validation=cross_validation_out, run_type=run_type)
 
-        all_rm_result = pd.concat([all_rm_result, result], axis=1)
-        MCS_result_all = pd.concat([MCS_result_all, mcs_result], axis=1)
+        # TODO:增加concat data的功能，使其能够计算SJ，RV+，RV-，RV
+        # 功能加完了，就是不知道对不对，测试也通过了
 
-        del observation
+            if observation > len(RV):
+                raise ValueError('The observation is larger than the length of RV.')
 
-    all_rm_result.to_csv('Result/allresult/all_rm_result.csv')
-    MCS_result_all.to_csv('Result/allresult/MCS_result_all.csv')
+            print(f'Data loaded. Loading data used {time.time() - start_time} seconds.')
+            print('-' * 50)
 
-    mcs_result_all = tm.main(all_rm_result, RV)
-    print('mcs_result_all is {}'.format(mcs_result_all))
+            result, mcs_result = main(other_y=other_y, other_type=risk_measure, observation=observation, run_times=run_times_out, \
+                 num_generations=num_generations_out, cross_validation=cross_validation_out, run_type=run_type)
 
-    mcs_result_all.to_csv('Result/allresult/mcs_result_all.csv')
+            all_rm_result = pd.concat([all_rm_result, result], axis=1)
+            MCS_result_all = pd.concat([MCS_result_all, mcs_result], axis=1)
+
+
+        all_rm_result.to_csv('Result/allresult/all_rm_result.csv')
+        MCS_result_all.to_csv('Result/allresult/MCS_result_all.csv')
+
+        mcs_result_all = tm.main(all_rm_result, RV)
+        print('mcs_result_all is {}'.format(mcs_result_all))
+
+        mcs_result_all.to_csv('Result/allresult/mcs_result_all.csv')
 
 
 

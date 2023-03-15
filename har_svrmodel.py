@@ -257,12 +257,15 @@ class HARSVRmodel():
                 raise ValueError('SVR training set X and Y have different length')
             return X, Y
 
-        elif self.model_type == 2 :
+        elif self.model_type == 2:
 
             #SVR的model2的训练集如果不取和Y一样的index则会出现空值
             Y = self.HAR_model().in_target[self.HAR_model().fit_start:].dropna()
+
             #X= self.HAR_model().regressor
             X = self.HAR_model().regressor[self.HAR_model().regressor.index.isin(Y.index)]
+
+            # input('press enter to continue')
             return X, Y
 
     def get_SVR_data_test(self):
@@ -399,8 +402,10 @@ class HARSVRmodel():
                         return -fitness if self.fitnessFunction in ['MAE', 'MAPE', 'MSE'] else fitness
                     #TODO:使用验证集即useData = test的时候的处理方法，运行ok，但是不知道有没有问题
                     if self.model_type == 2:
-                        if len(self.train_X) < max(self.lags):
-                            raise ValueError('length of training data is less than length of max lags of HAR model')
+                        if len(self.train_X) < max(self.lags) & self.train_X.shape[1] < len(self.lags):
+
+                            raise ValueError(f'length of training data is {len(self.train_X)} '
+                                             f'less than length of max lags {max(self.lags)} of HAR model')
                         else:
                             svr_optimization = SVR(kernel='rbf', gamma=solution[0], C=solution[1], epsilon=solution[2])
                             svr_prediction = (1-solution[3])*svr_optimization.fit(X=self.train_X, y=self.train_y).predict(self.test_X)\

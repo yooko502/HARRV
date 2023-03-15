@@ -19,13 +19,13 @@ def getdata(interval='1621'):
         dataframe['sec'] = range(dataframe.shape[0])
         return dataframe
     # TODO:data 路径改了 重新设定路径
-    all_pathset_0915 = ['data/pricedata/TickVisionData_0113_2009.csv',
-               'data/pricedata/TickVisionData_0113_2010.csv',
-               'data/pricedata/TickVisionData_0113_2011.csv',
-               'data/pricedata/TickVisionData_0113_2012.csv',
-               'data/pricedata/TickVisionData_0113_2013.csv',
-               'data/pricedata/TickVisionData_0113_2014.csv',
-               'data/pricedata/TickVisionData_0113_2015.csv']
+    all_pathset_0915 = ['/Users/zhuoyue/Documents/PycharmProjects/HAR_RV/data/pricedata/TickVisionData_0113_2009.csv',
+               '/Users/zhuoyue/Documents/PycharmProjects/HAR_RV/data/pricedata/TickVisionData_0113_2010.csv',
+               '/Users/zhuoyue/Documents/PycharmProjects/HAR_RV/data/pricedata/TickVisionData_0113_2011.csv',
+               '/Users/zhuoyue/Documents/PycharmProjects/HAR_RV/data/pricedata/TickVisionData_0113_2012.csv',
+               '/Users/zhuoyue/Documents/PycharmProjects/HAR_RV/data/pricedata/TickVisionData_0113_2013.csv',
+               '/Users/zhuoyue/Documents/PycharmProjects/HAR_RV/data/pricedata/TickVisionData_0113_2014.csv',
+               '/Users/zhuoyue/Documents/PycharmProjects/HAR_RV/data/pricedata/TickVisionData_0113_2015.csv']
 
     interval = interval
     if interval == '1621':
