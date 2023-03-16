@@ -34,12 +34,12 @@ def getdata(interval='1621'):
                     'price', 'volume', 'timeflag']
         droplist = ['ID', 'microsec', 'volume']
         i = 0
-        pathset = ['data/pricedata/TickVisionUHFD_0113_2016.csv',
-                   'data/pricedata/TickVisionUHFD_0113_2017.csv',
-                   'data/pricedata/TickVisionUHFD_0113_2018.csv',
-                   'data/pricedata/TickVisionUHFD_0113_2019.csv',
-                   'data/pricedata/TickVisionUHFD_0113_2020.csv',
-                   'data/pricedata/TickVisionUHFD_0113_2021.csv']
+        pathset = ['/Users/zhuoyue/Documents/PycharmProjects/HAR_RV/data/pricedata/TickVisionUHFD_0113_2016.csv',
+                   '/Users/zhuoyue/Documents/PycharmProjects/HAR_RV/data/pricedata/TickVisionUHFD_0113_2017.csv',
+                   '/Users/zhuoyue/Documents/PycharmProjects/HAR_RV/data/pricedata/TickVisionUHFD_0113_2018.csv',
+                   '/Users/zhuoyue/Documents/PycharmProjects/HAR_RV/data/pricedata/TickVisionUHFD_0113_2019.csv',
+                   '/Users/zhuoyue/Documents/PycharmProjects/HAR_RV/data/pricedata/TickVisionUHFD_0113_2020.csv',
+                   '/Users/zhuoyue/Documents/PycharmProjects/HAR_RV/data/pricedata/TickVisionUHFD_0113_2021.csv']
         for path in pathset:
             dataset[i] = pd.read_csv(path, header=None)
             dataset[i].columns = headlist
