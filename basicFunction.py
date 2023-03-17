@@ -39,7 +39,8 @@ def getdata(interval='1621'):
                    '/Users/zhuoyue/Documents/PycharmProjects/HAR_RV/data/pricedata/TickVisionUHFD_0113_2018.csv',
                    '/Users/zhuoyue/Documents/PycharmProjects/HAR_RV/data/pricedata/TickVisionUHFD_0113_2019.csv',
                    '/Users/zhuoyue/Documents/PycharmProjects/HAR_RV/data/pricedata/TickVisionUHFD_0113_2020.csv',
-                   '/Users/zhuoyue/Documents/PycharmProjects/HAR_RV/data/pricedata/TickVisionUHFD_0113_2021.csv']
+                   '/Users/zhuoyue/Documents/PycharmProjects/HAR_RV/data/pricedata/TickVisionUHFD_0113_2021.csv',
+                   '/Users/zhuoyue/Documents/PycharmProjects/HAR_RV/data/pricedata/TickVisionUHFD_0113_2022.csv']
         for path in pathset:
             dataset[i] = pd.read_csv(path, header=None)
             dataset[i].columns = headlist
@@ -75,7 +76,7 @@ def getdata(interval='1621'):
             dataset[i].columns = headlist
             dataset[i] = dataset[i].drop(columns=droplist)
             dataset[i] = dataset[i].groupby(['date', 'time']).apply(group_index)
-            dataset[i]['timeflag'] = np.where(dataset[i]['time'] < 120000,1,2)
+            dataset[i]['timeflag'] = np.where(dataset[i]['time'] < 120000, 1, 2)
             i = i + 1
 
         return dataset
