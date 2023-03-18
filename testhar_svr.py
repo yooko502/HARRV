@@ -409,13 +409,16 @@ if __name__ == '__main__':
 
     measure_list = [None, 'RV+', 'RV-', 'SJ']
     # 这趟运行的是用来干什么的，test代表这趟只是随便跑的测试，0915表示跑的是2009-2015的data
-    run_type = '0910'
+    run_type = '1622'
     all_rm_result = pd.DataFrame()  # 用来把所有的测度下的模型的预测结果都放在一起，然后用MCS来比较不同风险测度下一共12个模型的预测能力
     MCS_result_all = pd.DataFrame()  # 用来把所有的MCS结果放在一起保存
-    observationlist = [300]
+    observationlist = [190]
     run_times_out = 1
     num_generations_out = 1
-    dataset_interval = ['0910', '0915', '1621', '0921']
+    dataset_interval = ['0910', '0915', '1622', '0921']
+    data_interval = '1622'
+    data_start = 5  # 使用的data的开始点
+    data_end = 6  # 使用的data的结束点
     cross_validation_out = 'No split'
     # TODO：添加一个方法来进行不同的observation循环
     for observation in observationlist:
@@ -437,14 +440,14 @@ if __name__ == '__main__':
             print('Loading data...')
 
             # ------实际运行时候的指令
-            all_data = bf.getdata('0910')
+            all_data = bf.getdata(interval=data_interval, year_start=data_start, year_end=data_end)
             all_data = bf.concatRV(all_data)
 
             if risk_measure is None:
-                RV = bf.calculRV(all_data, interval='0915')
+                RV = bf.calculRV(all_data, interval=data_interval)
                 other_y = None
             else:
-                other_y, RV = bf.calculRV(all_data, interval='0915', type=risk_measure)
+                other_y, RV = bf.calculRV(all_data, interval=data_interval, type=risk_measure)
                 other_y.index = pd.to_datetime(other_y.index, format='%Y%m%d')
             # ------实际运行时候的指令
             # ----------------test用的指令----------------

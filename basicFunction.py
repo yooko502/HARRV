@@ -5,7 +5,7 @@ from sklearn.metrics import r2_score,mean_squared_error,mean_absolute_error,mean
 from sklearn.model_selection import TimeSeriesSplit
 
 
-def getdata(interval='1621'):
+def getdata(interval='1622', year_start=0, year_end=6):
     '''
     从本地读取 2016-2021 TOPIX index high-frequency data.
     interval : 选取什么时间段的data,type : string ex. 2009-2015 = '0915',2016-2021 = '1621'
@@ -28,7 +28,7 @@ def getdata(interval='1621'):
                '/Users/zhuoyue/Documents/PycharmProjects/HAR_RV/data/pricedata/TickVisionData_0113_2015.csv']
 
     interval = interval
-    if interval == '1621':
+    if interval == '1622':
         dataset = {}
         headlist = ['ID', 'date', 'hour', 'min', 'sec', 'microsec', \
                     'price', 'volume', 'timeflag']
@@ -41,7 +41,8 @@ def getdata(interval='1621'):
                    '/Users/zhuoyue/Documents/PycharmProjects/HAR_RV/data/pricedata/TickVisionUHFD_0113_2020.csv',
                    '/Users/zhuoyue/Documents/PycharmProjects/HAR_RV/data/pricedata/TickVisionUHFD_0113_2021.csv',
                    '/Users/zhuoyue/Documents/PycharmProjects/HAR_RV/data/pricedata/TickVisionUHFD_0113_2022.csv']
-        for path in pathset:
+
+        for path in pathset[year_start:year_end+1]:
             dataset[i] = pd.read_csv(path, header=None)
             dataset[i].columns = headlist
             dataset[i] = dataset[i].drop(columns=droplist)
@@ -71,7 +72,7 @@ def getdata(interval='1621'):
         droplist = ['volume']
         i = 0
         pathset = all_pathset_0915
-        for path in pathset:
+        for path in pathset[year_start:year_end+1]:
             dataset[i] = pd.read_csv(path, header=None)
             dataset[i].columns = headlist
             dataset[i] = dataset[i].drop(columns=droplist)
@@ -130,7 +131,7 @@ def getRVdata():
     return RVset
 
 
-def dataselect(data, DeltaT='1min', interval='0915'):
+def dataselect(data, DeltaT='1min', interval='1622'):
     '''
     A function for selecting data from original data.
     比如选择30秒间隔的data或者1分钟间隔的data etc...
@@ -141,7 +142,7 @@ def dataselect(data, DeltaT='1min', interval='0915'):
     :return: selected data by delta t.
     '''
     DeltaT = DeltaT
-    if interval == '1621':
+    if interval == '1622':
 
         dTinterval = ['15s', '30s', '1min', '5mins']
         if DeltaT not in dTinterval:
@@ -204,7 +205,7 @@ def calculRVplusminus(logreturn_positive, logreturn_minus, i):
 '''计算的方法不一定有问题，但是要写09-15的data和16-21的data的区分'''
 
 
-def calculRV(price_data, type = None,window='daily', DeltaT='1min', night=True, interval='0915', scale=True):
+def calculRV(price_data, type = None,window='daily', DeltaT='1min', night=True, interval='1622', scale=True):
     '''
     A funtion for calculating daily or monthly or weekly Realized Volatility.
 
