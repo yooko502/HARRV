@@ -38,14 +38,14 @@ class HARSVRmodel():
     def __init__(self, y, other_type=None, other_y=None, x=None,
                  lags=[1,5,22], observation=300,  # HAR model parameter
                  modeltype=2,  # 需要使用的模型类型
-                 num_generations=2000, num_parents_mating=16,  # GA-SVR需要的参数
-                 sol_per_pop=25, num_genes=3,
-                 gene_space=[{'low': 1e-5, 'high': 100}, {'low': 1e-6, 'high': 200}, {'low': 1e-5, 'high': 100}],#从左到右，gamma C epsilon
+                 num_generations=2000, num_parents_mating=20,  # GA-SVR需要的参数
+                 sol_per_pop=40, num_genes=3,
+                 gene_space=[{'low': 1e-2, 'high': 100}, {'low': 1e-2, 'high': 100}, {'low': 1e-2, 'high': 100}],#从左到右，gamma C epsilon
                  gene_type=[float, 6],
                  crossover_type='two_points',
                  crossover_probability=0.8,
-                 mutation_type='random',
-                 mutation_probability=0.8,
+                 mutation_type='swap',
+                 mutation_probability=0.65,
                  last_fitness=0,
                  fitnessFunction='MAE',
                  Methodkeys='No split',
@@ -370,7 +370,7 @@ class HARSVRmodel():
                                1] - self.last_fitness))
                 self.last_fitness = ga_instance.best_solution(pop_fitness=ga_instance.last_generation_fitness)[1]
 
-            if abs(fitness) <= 0.8 and self.Methodkeys == 'TSCV':
+            if abs(fitness) <= 0.8 and self.Methodkeys == 'TSCV' and self.fitnessFunction == "MAE":
 
                 # 跳出的条件，当fitness值小于0.8时，停止迭代
                 # 仅当调用Time series cross-validator时才会使用

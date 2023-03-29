@@ -5,7 +5,7 @@ from sklearn.metrics import r2_score,mean_squared_error,mean_absolute_error,mean
 from sklearn.model_selection import TimeSeriesSplit
 
 
-def getdata(interval='1622', year_start=0, year_end=6):
+def getdata(interval='1622', year_start=0, year_end=6, system='mac'):
     '''
     从本地读取 2016-2021 TOPIX index high-frequency data.
     interval : 选取什么时间段的data,type : string ex. 2009-2015 = '0915',2016-2021 = '1621'
@@ -41,7 +41,14 @@ def getdata(interval='1622', year_start=0, year_end=6):
                    '/Users/zhuoyue/Documents/PycharmProjects/HAR_RV/data/pricedata/TickVisionUHFD_0113_2020.csv',
                    '/Users/zhuoyue/Documents/PycharmProjects/HAR_RV/data/pricedata/TickVisionUHFD_0113_2021.csv',
                    '/Users/zhuoyue/Documents/PycharmProjects/HAR_RV/data/pricedata/TickVisionUHFD_0113_2022.csv']
-
+        if system == "windows":
+            pathset = [r'C:\Users\loooo\HARRV\data\pricedata\TickVisionUHFD_0113_2016.csv',
+                       r'C:\Users\loooo\HARRV\data\pricedata\TickVisionUHFD_0113_2017.csv',
+                       r'C:\Users\loooo\HARRV\data\pricedata\TickVisionUHFD_0113_2018.csv',
+                       r'C:\Users\loooo\HARRV\data\pricedata\TickVisionUHFD_0113_2019.csv',
+                       r'C:\Users\loooo\HARRV\data\pricedata\TickVisionUHFD_0113_2020.csv',
+                       r'C:\Users\loooo\HARRV\data\pricedata\TickVisionUHFD_0113_2021.csv',
+                       r'C:\Users\loooo\HARRV\data\pricedata\TickVisionUHFD_0113_2022.csv']
         for path in pathset[year_start:year_end+1]:
             dataset[i] = pd.read_csv(path, header=None)
             dataset[i].columns = headlist

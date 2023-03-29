@@ -334,7 +334,7 @@ def main(observation, run_times, num_generations, run_type, cross_validation, ot
     print('*'*50)
 
     label_list = ['HAR', 'HAR-SVR1', 'HAR-SVR2', 'HAR-SVR3', 'HAR-SVR4', 'HAR-SVR5', 'HAR-SVR6', 'HAR-SVR7', 'HAR-SVR8', 'HAR-SVR9', 'HAR-SVR10']
-    model_type = [1, 2, 3]  # TODO：这里是用来修改输入的model type 数量的
+    model_type = [2, 3]  # TODO：这里是用来修改输入的model type 数量的
     model_label = label_list[:len(model_type)+1]  # model 的label
 
     if len(model_label) != len(model_type)+1:
@@ -412,14 +412,14 @@ if __name__ == '__main__':
     run_type = '1622'
     all_rm_result = pd.DataFrame()  # 用来把所有的测度下的模型的预测结果都放在一起，然后用MCS来比较不同风险测度下一共12个模型的预测能力
     MCS_result_all = pd.DataFrame()  # 用来把所有的MCS结果放在一起保存
-    observationlist = [190]
-    run_times_out = 1
-    num_generations_out = 1
+    observationlist = [400, 600, 800]
+    run_times_out = 10
+    num_generations_out = 100
     dataset_interval = ['0910', '0915', '1622', '0921']
     data_interval = '1622'
-    data_start = 5  # 使用的data的开始点
+    data_start = 0  # 使用的data的开始点
     data_end = 6  # 使用的data的结束点
-    cross_validation_out = 'No split'
+    cross_validation_out = 'TSCV'
     # TODO：添加一个方法来进行不同的observation循环
     for observation in observationlist:
         print(f"Running observation {observation}...")
@@ -440,7 +440,7 @@ if __name__ == '__main__':
             print('Loading data...')
 
             # ------实际运行时候的指令
-            all_data = bf.getdata(interval=data_interval, year_start=data_start, year_end=data_end)
+            all_data = bf.getdata(interval=data_interval, year_start=data_start, year_end=data_end, system="windows")
             all_data = bf.concatRV(all_data)
 
             if risk_measure is None:
