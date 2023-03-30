@@ -412,18 +412,9 @@ if __name__ == '__main__':
     run_type = '1622'
     all_rm_result = pd.DataFrame()  # 用来把所有的测度下的模型的预测结果都放在一起，然后用MCS来比较不同风险测度下一共12个模型的预测能力
     MCS_result_all = pd.DataFrame()  # 用来把所有的MCS结果放在一起保存
-<<<<<<< HEAD
     observationlist = [400, 600, 800]
     run_times_out = 10
     num_generations_out = 100
-=======
-    # This code takes a list of observations and runs them through the
-    # model multiple times to determine the average number of generations
-    # and the average runtime of the model
-    observationlist = [190]
-    run_times_out = 1
-    num_generations_out = 1
->>>>>>> 9317d9a (changed some parameters.)
     dataset_interval = ['0910', '0915', '1622', '0921']
     data_interval = '1622'
     data_start = 0  # 使用的data的开始点
