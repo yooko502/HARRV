@@ -6,13 +6,8 @@ from sklearn.metrics import (mean_squared_error,
                              mean_absolute_percentage_error)
 
 # load data
-if __name__ == '__main__':
 
-    y_real = pd.read_csv('data/test_data/0915_RV.csv', index_col=0)
-
-interval_length = 22  # 计算error function的时候的时间间隔。
-
-
+interval_length = 22
 def SMAPE(y_pred, y):
     '''
     Calculate the SMAPE (Symmetric Mean Absolute Percentage Error) between the actual and predicted values.
@@ -145,18 +140,28 @@ def main(y_pred, y_r):
     # TODO:这里会出现莫名其妙的index不对应的BUG在下面mcs_qlike.compute()的时候 在method = 'R'的时候 max的时候也会
     mcs_mse = MCS(error_mse, size=0.05, method='max')
     mcs_mae = MCS(error_mae, size=0.05, method='max')
-    mcs_qlike = MCS(error_qlike, size=0.05, method='max')
     mcs_mape = MCS(error_mape, size=0.05, method='max')
     mcs_smape = MCS(error_smape, size=0.05, method='max')
+    try:
+        mcs_qlike = MCS(error_qlike, size=0.05, method='max')
+        mcs_mae.compute()
+        mcs_mse.compute()
+        mcs_qlike.compute()
+        mcs_mape.compute()
+        mcs_smape.compute()
+        mcs_columns = ['mse', 'mae', 'Q-LIKE', 'mape', 'samape']
+        mcs_pvalues = [mcs_mse.pvalues, mcs_mae.pvalues, mcs_qlike.pvalues, mcs_mape.pvalues, mcs_smape.pvalues]
+    except:
 
-    mcs_mae.compute()
-    mcs_mse.compute()
-    mcs_qlike.compute()
-    mcs_mape.compute()
-    mcs_smape.compute()
+        mcs_mae.compute()
+        mcs_mse.compute()
+        mcs_mape.compute()
+        mcs_smape.compute()
+        mcs_columns = ['mse', 'mae', 'mape', 'samape']
+        mcs_pvalues = [mcs_mse.pvalues, mcs_mae.pvalues, mcs_mape.pvalues, mcs_smape.pvalues]
 
-    mcs_result = pd.concat([mcs_mse.pvalues, mcs_mae.pvalues, mcs_qlike.pvalues, mcs_mape.pvalues, mcs_smape.pvalues], axis=1)
-    mcs_result.columns = ['mse', 'mae', 'Q-LIKE', 'mape', 'samape']
+    mcs_result = pd.concat(mcs_pvalues, axis=1)
+    mcs_result.columns = mcs_columns
     mcs_result.index = forecast_columns
 
     return mcs_result
