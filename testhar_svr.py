@@ -449,7 +449,6 @@ if __name__ == '__main__':
             # ------实际运行时候的指令
             all_data = bf.getdata(interval=data_interval, year_start=data_start, year_end=data_end)
             all_data = bf.concatRV(all_data)
-            all_data = all_data.iloc[max(observationlist) - observation:, :]
             if risk_measure is None:
                 RV = bf.calculRV(all_data, interval=data_interval)
                 other_y = None
