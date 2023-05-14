@@ -38,13 +38,13 @@ class HARSVRmodel():
     def __init__(self, y, other_type=None, other_y=None, x=None,
                  lags=[1,5,22], observation=300,  # HAR model parameter
                  modeltype=2,  # 需要使用的模型类型
-                 num_generations=2000, num_parents_mating=20,  # GA-SVR需要的参数
+                 num_generations=2000, num_parents_mating=25,  # GA-SVR需要的参数
                  sol_per_pop=40, num_genes=3,
-                 gene_space=[{'low': 1e-2, 'high': 100}, {'low': 1e-2, 'high': 100}, {'low': 1e-2, 'high': 100}],#从左到右，gamma C epsilon
+                 gene_space=[{'low': 1e-2, 'high': 200}, {'low': 1e-2, 'high': 200}, {'low': 1e-2, 'high': 200}],#从左到右，gamma C epsilon
                  gene_type=[float, 6],
                  crossover_type='two_points',
                  crossover_probability=0.8,
-                 mutation_type='swap',
+                 mutation_type='random',
                  mutation_probability=0.65,
                  last_fitness=0,
                  fitnessFunction='MAE',

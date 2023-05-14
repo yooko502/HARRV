@@ -153,12 +153,14 @@ def main(y_pred, y_r):
         mcs_pvalues = [mcs_mse.pvalues, mcs_mae.pvalues, mcs_qlike.pvalues, mcs_mape.pvalues, mcs_smape.pvalues]
     except:
 
+
         mcs_mae.compute()
         mcs_mse.compute()
         mcs_mape.compute()
         mcs_smape.compute()
         mcs_columns = ['mse', 'mae', 'mape', 'samape']
         mcs_pvalues = [mcs_mse.pvalues, mcs_mae.pvalues, mcs_mape.pvalues, mcs_smape.pvalues]
+
 
     mcs_result = pd.concat(mcs_pvalues, axis=1)
     mcs_result.columns = mcs_columns
