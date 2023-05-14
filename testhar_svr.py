@@ -449,13 +449,17 @@ if __name__ == '__main__':
             # ------实际运行时候的指令
             all_data = bf.getdata(interval=data_interval, year_start=data_start, year_end=data_end)
             all_data = bf.concatRV(all_data)
-            all_data = all_data
+            all_data = all_data.iloc[max(observationlist) - observation:, :]
             if risk_measure is None:
                 RV = bf.calculRV(all_data, interval=data_interval)
                 other_y = None
             else:
                 other_y, RV = bf.calculRV(all_data, interval=data_interval, type=risk_measure)
                 other_y.index = pd.to_datetime(other_y.index, format='%Y%m%d')
+
+            '''根据不同的observation，统一后面的测试集的时间区间'''
+            RV = RV.iloc[max(observationlist) - observation:, :]
+
             # ------实际运行时候的指令
             # ----------------test用的指令----------------
             # RV = pd.read_csv('data/test_data/test_data.csv', index_col=0)  # data数：100
