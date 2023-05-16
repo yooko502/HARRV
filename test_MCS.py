@@ -153,6 +153,14 @@ def main(y_pred, y_r):
         mcs_pvalues = [mcs_mse.pvalues, mcs_mae.pvalues, mcs_qlike.pvalues, mcs_mape.pvalues, mcs_smape.pvalues]
     except:
 
+<<<<<<< HEAD
+=======
+    mcs_mae.compute()
+    mcs_mse.compute()
+    mcs_qlike.compute()  # risk measure是SJ的时候会报错。
+    mcs_mape.compute()
+    mcs_smape.compute()
+>>>>>>> 21b7a3a (wangle gaile shenmele)
 
         mcs_mae.compute()
         mcs_mse.compute()

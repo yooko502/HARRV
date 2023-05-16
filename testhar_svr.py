@@ -418,10 +418,12 @@ if __name__ == '__main__':
 
     measure_list = [None, 'RV+', 'RV-']# SJ的qlike没办法计算，同时harmodel的结果有问题，暂时去掉
 
+
     # 这趟运行的是用来干什么的，test代表这趟只是随便跑的测试，0915表示跑的是2009-2015的data
     run_type = '1622'
     all_rm_result = pd.DataFrame()  # 用来把所有的测度下的模型的预测结果都放在一起，然后用MCS来比较不同风险测度下一共12个模型的预测能力
     MCS_result_all = pd.DataFrame()  # 用来把所有的MCS结果放在一起保存
+
 
     observationlist = [300, 600, 900, 1200]
 
@@ -454,7 +456,6 @@ if __name__ == '__main__':
             # ------实际运行时候的指令
             all_data = bf.getdata(interval=data_interval, year_start=data_start, year_end=data_end, system='windows')
             all_data = bf.concatRV(all_data)
-            all_data = all_data.iloc[max(observationlist) - observation:, :]
             if risk_measure is None:
                 RV = bf.calculRV(all_data, interval=data_interval)
                 other_y = None
