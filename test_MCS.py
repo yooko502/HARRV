@@ -142,33 +142,15 @@ def main(y_pred, y_r):
     mcs_mae = MCS(error_mae, size=0.05, method='max')
     mcs_mape = MCS(error_mape, size=0.05, method='max')
     mcs_smape = MCS(error_smape, size=0.05, method='max')
-    try:
-        mcs_qlike = MCS(error_qlike, size=0.05, method='max')
-        mcs_mae.compute()
-        mcs_mse.compute()
-        mcs_qlike.compute()
-        mcs_mape.compute()
-        mcs_smape.compute()
-        mcs_columns = ['mse', 'mae', 'Q-LIKE', 'mape', 'samape']
-        mcs_pvalues = [mcs_mse.pvalues, mcs_mae.pvalues, mcs_qlike.pvalues, mcs_mape.pvalues, mcs_smape.pvalues]
-    except:
 
-<<<<<<< HEAD
-=======
+    mcs_qlike = MCS(error_qlike, size=0.05, method='max')
     mcs_mae.compute()
     mcs_mse.compute()
-    mcs_qlike.compute()  # risk measure是SJ的时候会报错。
+    mcs_qlike.compute()
     mcs_mape.compute()
     mcs_smape.compute()
->>>>>>> 21b7a3a (wangle gaile shenmele)
-
-        mcs_mae.compute()
-        mcs_mse.compute()
-        mcs_mape.compute()
-        mcs_smape.compute()
-        mcs_columns = ['mse', 'mae', 'mape', 'samape']
-        mcs_pvalues = [mcs_mse.pvalues, mcs_mae.pvalues, mcs_mape.pvalues, mcs_smape.pvalues]
-
+    mcs_columns = ['mse', 'mae', 'Q-LIKE', 'mape', 'samape']
+    mcs_pvalues = [mcs_mse.pvalues, mcs_mae.pvalues, mcs_qlike.pvalues, mcs_mape.pvalues, mcs_smape.pvalues]
 
     mcs_result = pd.concat(mcs_pvalues, axis=1)
     mcs_result.columns = mcs_columns
