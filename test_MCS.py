@@ -136,13 +136,14 @@ def main(y_pred, y_r):
     error_mape = cal_error_mape(forecast, y)
     error_smape = cal_error_smape(forecast, y)
 
-    print(f'qlike :{error_qlike}')
-    print(f'mse :{error_mse}')
-    print(f'mae :{error_mae}')
-    print(f'mape :{error_mape}')
-    print(f'smape :{error_smape}')
+    print(f'qlike :{error_qlike} type :{type(error_qlike)} shape :{error_qlike.shape}')
+    print(f'mse :{error_mse} type :{type(error_mse)} shape :{error_mse.shape}')
+    print(f'mae :{error_mae} type :{type(error_mae)} shape :{error_mae.shape}')
+    print(f'mape :{error_mape} type :{type(error_mape)} shape :{error_mape.shape}')
+    print(f'smape :{error_smape} type :{type(error_smape)} shape :{error_smape.shape}')
 
-    input('enter')
+    input('enter to continue')
+
     # TODO:这里会出现莫名其妙的index不对应的BUG在下面mcs_qlike.compute()的时候 在method = 'R'的时候 max的时候也会
     mcs_mse = MCS(error_mse, size=0.05, method='max')
     mcs_mae = MCS(error_mae, size=0.05, method='max')
