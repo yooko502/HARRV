@@ -119,9 +119,14 @@ def run_har_svr(RV, observation, model_type, times, num_generations, cross_valid
             other_y_used = other_y.iloc[i:i+observation+1, :]
         else:
             other_y_used = None
-        harsvr = HARSVRmodel(y=RV_used, other_y=other_y_used, other_type=other_type, lags=[1,5,22], useData='test',modeltype=model_type,\
-                             num_generations=num_generations,\
-                             gene_space=[{'low': 1e-6, 'high': 100}, {'low': 1e-2, 'high': 200}, {'low': 1e-6, 'high': 100}],\
+        harsvr = HARSVRmodel(y=RV_used,
+                             other_y=other_y_used,
+                             other_type=other_type,
+                             lags=[1, 5, 22],
+                             useData='test',
+                             modeltype=model_type,
+                             num_generations=num_generations,
+                             gene_space=[{'low': 1e-6, 'high': 100}, {'low': 1e-2, 'high': 200}, {'low': 1e-6, 'high': 100}],
                              observation=observation, Methodkeys=cross_validation)
 
         a = harsvr.predict()
@@ -161,8 +166,8 @@ def run_n_times(n, model_type, observation, num_generations, cross_validation, o
         #TODO：print 一些东西增加监听功能
         print('*'*50)
         print(f'run {j+1} times for model {model_type} on risk measure {other_type}')
-        result_all[j], time_used[j] = run_har_svr(RV=RV, other_y=other_y, other_type=other_type, \
-                                                  observation=observation, model_type=model_type,times=j,\
+        result_all[j], time_used[j] = run_har_svr(RV=RV, other_y=other_y, other_type=other_type,
+                                                  observation=observation, model_type=model_type,times=j,
                                                   num_generations=num_generations, cross_validation=cross_validation)
         result_all[j].columns = ['Number of times {}'.format(j)]
         print('*'*50)
@@ -307,9 +312,9 @@ def error_function_each_day(forecasting_result, RV, model_type, run_type, cross_
     error_var.loc[0, 'R2'] = errors['R2'].var()
     risk_measure = measure
 
-    error_mean.to_csv('Result/{}/{}/{}/{}_har_svr_error_mean_model{}.csv'.format(risk_measure, run_type, cross_validation,\
+    error_mean.to_csv('Result/{}/{}/{}/{}_har_svr_error_mean_model{}.csv'.format(risk_measure, run_type, cross_validation,
                                                                                  run_type, model_type))
-    error_var.to_csv('Result/{}/{}/{}/{}_har_svr_error_var_model{}.csv'.format(risk_measure, run_type, cross_validation,\
+    error_var.to_csv('Result/{}/{}/{}/{}_har_svr_error_var_model{}.csv'.format(risk_measure, run_type, cross_validation,
                                                                                run_type, model_type))
 
 
@@ -359,10 +364,10 @@ def main(observation, run_times, num_generations, run_type, cross_validation, ot
 
     for i in model_type:
 
-        forecasting_result, statistics_result, maximum_val, minimum_val = run_n_times(n=run_times, model_type=i,\
-                                                                                      cross_validation=cross_validation,\
-                                                                                      observation=observation,\
-                                                                                      other_y=other_y, other_type=other_type,\
+        forecasting_result, statistics_result, maximum_val, minimum_val = run_n_times(n=run_times, model_type=i,
+                                                                                      cross_validation=cross_validation,
+                                                                                      observation=observation,
+                                                                                      other_y=other_y, other_type=other_type,
                                                                                       num_generations=num_generations)
         if other_type is None:
             risk_measure = 'RV'
@@ -381,9 +386,9 @@ def main(observation, run_times, num_generations, run_type, cross_validation, ot
 
         error_function(statistics_result, RV, i, measure=risk_measure, run_type=run_type, cross_validation=cross_validation)
         all_result = pd.concat([all_result, statistics_result['mean']], axis=1)
-        error_function_each_day(forecasting_result, RV, i, measure=risk_measure, run_type=run_type, \
+        error_function_each_day(forecasting_result, RV, i, measure=risk_measure, run_type=run_type,
                                 cross_validation=cross_validation)
-        plot_result(statistics_result, maximum_val, minimum_val, RV, i, har_result, measure=risk_measure, \
+        plot_result(statistics_result, maximum_val, minimum_val, RV, i, har_result, measure=risk_measure,
                     run_times=run_times, cross_validation=cross_validation, num_generations=num_generations)
 
 
@@ -424,7 +429,7 @@ if __name__ == '__main__':
     num_generations_out = 40
     dataset_interval = ['0910', '0915', '1622', '0921']
     data_interval = '1622'
-    data_start = 1  # 使用的data的开始点
+    data_start = 0  # 使用的data的开始点
     data_end = 6  # 使用的data的结束点
     cross_validation_out = 'No split'
     # TODO：添加一个方法来进行不同的observation循环
@@ -447,7 +452,7 @@ if __name__ == '__main__':
             print('Loading data...')
 
             # ------实际运行时候的指令
-            all_data = bf.getdata(interval=data_interval, year_start=data_start, year_end=data_end)
+            all_data = bf.getdata(interval=data_interval, year_start=data_start, year_end=data_end, system='windows')
             all_data = bf.concatRV(all_data)
             all_data = all_data.iloc[max(observationlist) - observation:, :]
             if risk_measure is None:
@@ -476,8 +481,13 @@ if __name__ == '__main__':
             print(f'Data loaded. Loading data used {time.time() - start_time} seconds.')
             print('-' * 50)
 
-            result, mcs_result = main(other_y=other_y, other_type=risk_measure, observation=observation, run_times=run_times_out, \
-                 num_generations=num_generations_out, cross_validation=cross_validation_out, run_type=run_type)
+            result, mcs_result = main(other_y=other_y,
+                                      other_type=risk_measure,
+                                      observation=observation,
+                                      run_times=run_times_out,
+                                      num_generations=num_generations_out,
+                                      cross_validation=cross_validation_out,
+                                      run_type=run_type)
 
             all_rm_result = pd.concat([all_rm_result, result], axis=1)
             MCS_result_all = pd.concat([MCS_result_all, mcs_result], axis=1)
