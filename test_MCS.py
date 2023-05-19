@@ -7,7 +7,9 @@ from sklearn.metrics import (mean_squared_error,
 
 # load data
 
-interval_length = 22
+interval_length = 5  # 尝试排除bug，使用5天的数据进行计算。增加输入的loss量
+
+
 def SMAPE(y_pred, y):
     '''
     Calculate the SMAPE (Symmetric Mean Absolute Percentage Error) between the actual and predicted values.
@@ -136,7 +138,6 @@ def main(y_pred, y_r):
     error_mape = cal_error_mape(forecast, y)
     error_smape = cal_error_smape(forecast, y)
 
-    # TODO:这里会出现莫名其妙的index不对应的BUG在下面mcs_qlike.compute()的时候 在method = 'R'的时候 max的时候也会
     mcs_mse = MCS(error_mse, size=0.05, method='max')
     mcs_mae = MCS(error_mae, size=0.05, method='max')
     mcs_mape = MCS(error_mape, size=0.05, method='max')
