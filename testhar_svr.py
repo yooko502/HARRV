@@ -422,13 +422,13 @@ if __name__ == '__main__':
     all_rm_result = pd.DataFrame()  # 用来把所有的测度下的模型的预测结果都放在一起，然后用MCS来比较不同风险测度下一共12个模型的预测能力
     MCS_result_all = pd.DataFrame()  # 用来把所有的MCS结果放在一起保存
 
-    observationlist = [400]
-    run_times_out = 1
-    num_generations_out = 1
+    observationlist = [300, 600, 900, 1200]
+    run_times_out = 10
+    num_generations_out = 40
 
     dataset_interval = ['0910', '0915', '1622', '0921']
     data_interval = '1622'
-    data_start = 5  # 使用的data的开始点
+    data_start = 1  # 使用的data的开始点
     data_end = 6  # 使用的data的结束点
     cross_validation_out = 'No split'
     # TODO：添加一个方法来进行不同的observation循环
@@ -461,6 +461,7 @@ if __name__ == '__main__':
                 other_y.index = pd.to_datetime(other_y.index, format='%Y%m%d')
 
             '''根据不同的observation，统一后面的测试集的时间区间'''
+            other_y = other_y.iloc[max(observationlist) - observation:, :]
             RV = RV.iloc[max(observationlist) - observation:, :]
 
             # ------实际运行时候的指令
