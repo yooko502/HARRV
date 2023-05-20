@@ -419,7 +419,7 @@ if __name__ == '__main__':
     run_type = '1622'
     all_rm_result = pd.DataFrame()  # 用来把所有的测度下的模型的预测结果都放在一起，然后用MCS来比较不同风险测度下一共12个模型的预测能力
     MCS_result_all = pd.DataFrame()  # 用来把所有的MCS结果放在一起保存
-    observationlist = [300]
+    observationlist = [300,1200]
     run_times_out = 1
     num_generations_out = 1
     dataset_interval = ['0910', '0915', '1622', '0921']
@@ -455,9 +455,9 @@ if __name__ == '__main__':
             else:
                 other_y, RV = bf.calculRV(all_data, interval=data_interval, type=risk_measure)
                 other_y.index = pd.to_datetime(other_y.index, format='%Y%m%d')
+                other_y = other_y.iloc[max(observationlist) - observation:, :]
 
             '''根据不同的observation，统一后面的测试集的时间区间'''
-            other_y = other_y.iloc[max(observationlist) - observation:, :]
             RV = RV.iloc[max(observationlist) - observation:, :]
 
             # ------实际运行时候的指令
@@ -474,7 +474,6 @@ if __name__ == '__main__':
 
             print(f'Data loaded. Loading data used {time.time() - start_time} seconds.')
             print('-' * 50)
-
             result, mcs_result = main(other_y=other_y,
                                       other_type=risk_measure,
                                       observation=observation,
