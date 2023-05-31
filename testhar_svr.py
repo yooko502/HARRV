@@ -418,9 +418,23 @@ if __name__ == '__main__':
     system_name = 'mac'
     # 这趟运行的是用来干什么的，test代表这趟只是随便跑的测试，0915表示跑的是2009-2015的data
     run_type = '1622'
+
+    # rm = result mcs
     all_rm_result = pd.DataFrame()  # 用来把所有的训练集下的所有模型的预测结果都放在一起，然后用MCS来比较不同风险测度不同训练集下一共48个模型的预测能力
     MCS_result_all = pd.DataFrame()  # 用来把所有的MCS结果放在一起保存
     all_rm_result_each_obser = pd.DataFrame()  # 用来把相同训练集下的模型进行对比。比较12个模型。
+
+    # 这里的变量用来进行不同observation间相同测度模型的结果。
+
+    result_RV = pd.DataFrame()  # 用来存放RV的结果
+    result_RV_positive = pd.DataFrame()  # 用来存放RV+的结果
+    result_RV_minus = pd.DataFrame()  # 用来存放RV-的结果
+    result_SJ = pd.DataFrame()  # 用来存放SJ的结果
+
+    result_each_measure = {'RV': result_RV,
+                           'RV+': result_RV_positive,
+                           'RV-': result_RV_minus,
+                           'SJ': result_SJ}
 
     observationlist = [300, 600, 900, 1200]
     run_times_out = 10
@@ -491,6 +505,8 @@ if __name__ == '__main__':
             MCS_result_all = pd.concat([MCS_result_all, mcs_result], axis=1)
             all_rm_result_each_obser = pd.concat([all_rm_result_each_obser, result], axis=1)
 
+            result_each_measure[risk_measure] = pd.concat([result_each_measure[risk_measure], result], axis=1)
+
         all_rm_result.to_csv('Result/allresult/all_rm_result.csv')
         MCS_result_all.to_csv('Result/allresult/MCS_result_all_individual.csv')
         all_rm_result_each_obser.to_csv('Result/allresult/all_rm_result_each_obser.csv')
@@ -504,6 +520,10 @@ if __name__ == '__main__':
         del mcs_result_each_obser
 
         mcs_result_all.to_csv('Result/allresult/mcs_result_all.csv')
+
+    for rv in result_each_measure.keys():
+        mcs_each_measure = tm.main(result_each_measure[rv], RV)
+        result_each_measure[rv].to_csv(f'Result/allresult/mcs_result_each_measure_{rv}.csv')
 
 
 
