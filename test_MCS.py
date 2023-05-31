@@ -7,7 +7,7 @@ from sklearn.metrics import (mean_squared_error,
 
 # load data
 
-interval_length = 5  # 尝试排除bug，使用5天的数据进行计算。增加输入的loss量
+interval_length = 22  # 尝试排除bug，使用5天的数据进行计算。增加输入的loss量
 
 
 def SMAPE(y_pred, y):

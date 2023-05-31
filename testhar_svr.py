@@ -413,22 +413,28 @@ def main(observation, run_times, num_generations, run_type, cross_validation, ot
 
 
 if __name__ == '__main__':
-    measure_list = [None, 'RV+', 'RV-', 'SJ']  # SJ的qlike没办法计算，同时harmodel的结果有问题，暂时去掉
+
+    measure_list = ['SJ']  # SJ的qlike没办法计算，同时harmodel的结果有问题，暂时去掉
     system_name = 'mac'
     # 这趟运行的是用来干什么的，test代表这趟只是随便跑的测试，0915表示跑的是2009-2015的data
     run_type = '1622'
-    all_rm_result = pd.DataFrame()  # 用来把所有的测度下的模型的预测结果都放在一起，然后用MCS来比较不同风险测度下一共12个模型的预测能力
+    all_rm_result = pd.DataFrame()  # 用来把所有的训练集下的所有模型的预测结果都放在一起，然后用MCS来比较不同风险测度不同训练集下一共48个模型的预测能力
     MCS_result_all = pd.DataFrame()  # 用来把所有的MCS结果放在一起保存
-    observationlist = [1200]
-    run_times_out = 1
-    num_generations_out = 1
+    all_rm_result_each_obser = pd.DataFrame()  # 用来把相同训练集下的模型进行对比。比较12个模型。
+
+    observationlist = [300, 600, 900, 1200]
+    run_times_out = 10
+    num_generations_out = 40
     dataset_interval = ['0910', '0915', '1622', '0921']
     data_interval = '1622'
-    data_start = 0  # 使用的data的开始点
+    data_start = 1  # 使用的data的开始点
     data_end = 6  # 使用的data的结束点
     cross_validation_out = 'No split'
+    root_dir = '/Users/zhuoyue/Documents/PycharmProjects/HAR_RV'
     # TODO：添加一个方法来进行不同的observation循环
     for observation in observationlist:
+        os.chdir(root_dir)  # 切换到根目录
+
         print(f"Running observation {observation}...")
         observation_folder = f"observation{observation}"
 
@@ -436,8 +442,7 @@ if __name__ == '__main__':
             os.makedirs(f"{observation_folder}")
             shutil.copytree("Result", f"{observation_folder}/Result")
 
-        current_dir = os.getcwd()
-        os.chdir(os.path.join(current_dir, observation_folder))  # 切换到次一级的目录
+        os.chdir(os.path.join(root_dir, observation_folder))  # 切换到次一级的目录
 
         for risk_measure in measure_list:
             print('-' * 50)
@@ -455,6 +460,7 @@ if __name__ == '__main__':
             else:
                 other_y, RV = bf.calculRV(all_data, interval=data_interval, type=risk_measure)
                 other_y.index = pd.to_datetime(other_y.index, format='%Y%m%d')
+                other_y = other_y.iloc[max(observationlist) - observation:, :]
 
             '''根据不同的observation，统一后面的测试集的时间区间'''
             RV = RV.iloc[max(observationlist) - observation:, :]
@@ -473,7 +479,6 @@ if __name__ == '__main__':
 
             print(f'Data loaded. Loading data used {time.time() - start_time} seconds.')
             print('-' * 50)
-
             result, mcs_result = main(other_y=other_y,
                                       other_type=risk_measure,
                                       observation=observation,
@@ -484,11 +489,19 @@ if __name__ == '__main__':
 
             all_rm_result = pd.concat([all_rm_result, result], axis=1)
             MCS_result_all = pd.concat([MCS_result_all, mcs_result], axis=1)
+            all_rm_result_each_obser = pd.concat([all_rm_result_each_obser, result], axis=1)
+
         all_rm_result.to_csv('Result/allresult/all_rm_result.csv')
-        MCS_result_all.to_csv('Result/allresult/MCS_result_all.csv')
+        MCS_result_all.to_csv('Result/allresult/MCS_result_all_individual.csv')
+        all_rm_result_each_obser.to_csv('Result/allresult/all_rm_result_each_obser.csv')
 
         mcs_result_all = tm.main(all_rm_result, RV)
+        mcs_result_each_obser = tm.main(all_rm_result_each_obser, RV)
+
         print('mcs_result_all is {}'.format(mcs_result_all))
+        print('mcs_result_each_obser is {}'.format(mcs_result_each_obser))
+
+        del mcs_result_each_obser
 
         mcs_result_all.to_csv('Result/allresult/mcs_result_all.csv')
 
