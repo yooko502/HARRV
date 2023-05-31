@@ -200,7 +200,7 @@ def calculRVplusminus(logreturn_positive, logreturn_minus, i):
     rv_positive = i * logreturn_positive.groupby('date').sum()
 
     rv_minus = i * logreturn_minus.groupby('date').sum()
-    sj = rv_positive - rv_minus
+    sj = np.abs(rv_positive - rv_minus)
 
     rv_positive.columns = ['RV+']
     rv_minus.columns = ['RV-']
