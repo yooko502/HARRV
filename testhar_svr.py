@@ -430,11 +430,13 @@ if __name__ == '__main__':
     result_RV_positive = pd.DataFrame()  # 用来存放RV+的结果
     result_RV_minus = pd.DataFrame()  # 用来存放RV-的结果
     result_SJ = pd.DataFrame()  # 用来存放SJ的结果
+    result_SJ_abs = pd.DataFrame()  # 用来存放SJ_abs的结果
 
     result_each_measure = {'RV': result_RV,
                            'RV+': result_RV_positive,
                            'RV-': result_RV_minus,
-                           'SJ': result_SJ}
+                           'SJ': result_SJ,
+                           'SJ_abs': result_SJ_abs}
 
     observationlist = [300, 600, 900, 1200]
     run_times_out = 10
