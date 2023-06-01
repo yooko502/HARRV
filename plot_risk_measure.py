@@ -51,6 +51,7 @@ def plot_data(data, risk_measure):
     plt.xlabel('Date')
     plt.ylabel(f'{ylabel_set[risk_measure]}')
     plt.title(f'{ylabel_set[risk_measure]} Data')
+    plt.tight_layout()
 
     plt.savefig(f'/Users/zhuoyue/Documents/PycharmProjects/HAR_RV/risk_measure_figure/{risk_measure}_data.eps')
     plt.savefig(f'/Users/zhuoyue/Documents/PycharmProjects/HAR_RV/risk_measure_figure/{risk_measure}_data.png')
