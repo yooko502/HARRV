@@ -51,10 +51,11 @@ def plot_data(data, risk_measure):
     plt.xlabel('Date')
     plt.ylabel(f'{ylabel_set[risk_measure]}')
     plt.title(f'{ylabel_set[risk_measure]} Data')
-    plt.show()
 
-    plt.savefig(f'/Users/zhuoyue/Documents/PycharmProjects/HAR_RV/risk_measure_figure/{risk_measure}_data.eps', dpi=600)
-    plt.savefig(f'/Users/zhuoyue/Documents/PycharmProjects/HAR_RV/risk_measure_figure/{risk_measure}_data.png', dpi=600)
+    plt.savefig(f'/Users/zhuoyue/Documents/PycharmProjects/HAR_RV/risk_measure_figure/{risk_measure}_data.eps')
+    plt.savefig(f'/Users/zhuoyue/Documents/PycharmProjects/HAR_RV/risk_measure_figure/{risk_measure}_data.png')
+
+    plt.show()
 
 
 def main():
