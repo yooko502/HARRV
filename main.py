@@ -226,6 +226,8 @@ def plot_result(statistics_result, maximum_val, minimum_val, RV, model_type, har
     RV = RV.shift(-1)[RV.index.isin(statistics_result['mean'].index)]
     ax.plot(RV, label='Real Value')
     ax.legend()
+    plt.tight_layout()
+
     risk_measure = measure
     plt.savefig('Result/{}/{}/{}/{}_har_svr_model{}.png'.format(risk_measure, run_type, cross_validation, run_type, model_type))
     plt.savefig('Result/{}/{}/{}/{}_har_svr_model{}.eps'.format(risk_measure, run_type, cross_validation, run_type, model_type))
@@ -414,15 +416,14 @@ def main(observation, run_times, num_generations, run_type, cross_validation, ot
 
 if __name__ == '__main__':
 
-    measure_list = ['SJ']  # SJ的qlike没办法计算，同时harmodel的结果有问题，暂时去掉
+    measure_list = ['SJ', 'SJ_abs']  # SJ的qlike没办法计算，同时harmodel的结果有问题，暂时去掉
     system_name = 'mac'
     # 这趟运行的是用来干什么的，test代表这趟只是随便跑的测试，0915表示跑的是2009-2015的data
     run_type = '1622'
 
     # rm = result mcs
-    all_rm_result = pd.DataFrame()  # 用来把所有的训练集下的所有模型的预测结果都放在一起，然后用MCS来比较不同风险测度不同训练集下一共48个模型的预测能力
-    MCS_result_all = pd.DataFrame()  # 用来把所有的MCS结果放在一起保存
-    all_rm_result_each_obser = pd.DataFrame()  # 用来把相同训练集下的模型进行对比。比较12个模型。
+    all_rm_result = pd.DataFrame()  # 用来把所有的训练集下的所有模型的预测结果都放在一起，会从一开始逐渐累积，然后用MCS来比较不同风险测度不同训练集下一共48个模型的预测能力
+    MCS_result_all = pd.DataFrame()  # 用来把所有的MCS结果放在一起保存单独测度的MCS结果
 
     # 这里的变量用来进行不同observation间相同测度模型的结果。
 
@@ -449,6 +450,8 @@ if __name__ == '__main__':
     root_dir = '/Users/zhuoyue/Documents/PycharmProjects/HAR_RV'
     # TODO：添加一个方法来进行不同的observation循环
     for observation in observationlist:
+
+        all_rm_result_each_obser = pd.DataFrame()  # 用来把相同训练集下的模型进行对比。比较12个模型。不会累计，每个obeservation结束都会删除
         os.chdir(root_dir)  # 切换到根目录
 
         print(f"Running observation {observation}...")
@@ -510,16 +513,15 @@ if __name__ == '__main__':
             result_each_measure[risk_measure] = pd.concat([result_each_measure[risk_measure], result], axis=1)
 
         all_rm_result.to_csv('Result/allresult/all_rm_result.csv')
-        MCS_result_all.to_csv('Result/allresult/MCS_result_all_individual.csv')
+        MCS_result_all.to_csv('Result/allresult/MCS_result_all_individual.csv')  # 这个只是用来保存每个训练集下每个测度的MCS结果，存在一起比较方便。
         all_rm_result_each_obser.to_csv('Result/allresult/all_rm_result_each_obser.csv')
 
-        mcs_result_all = tm.main(all_rm_result, RV)
+        mcs_result_all = tm.main(all_rm_result, RV)  # 同一个训练集下所有测度进行比较的结果,并且随着训练集改变逐渐累计结果
         mcs_result_each_obser = tm.main(all_rm_result_each_obser, RV)
 
         print('mcs_result_all is {}'.format(mcs_result_all))
-        print('mcs_result_each_obser is {}'.format(mcs_result_each_obser))
 
-        del mcs_result_each_obser
+        del mcs_result_each_obser, all_rm_result_each_obser
 
         mcs_result_all.to_csv('Result/allresult/mcs_result_all.csv')
 
