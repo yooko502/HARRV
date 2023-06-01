@@ -200,13 +200,15 @@ def calculRVplusminus(logreturn_positive, logreturn_minus, i):
     rv_positive = i * logreturn_positive.groupby('date').sum()
 
     rv_minus = i * logreturn_minus.groupby('date').sum()
+    sj_abs = np.abs(rv_positive - rv_minus)
     sj = rv_positive - rv_minus
 
     rv_positive.columns = ['RV+']
     rv_minus.columns = ['RV-']
     sj.columns = ['SJ']
+    sj_abs.columns = ['SJ_abs']
 
-    return rv_positive, rv_minus, sj
+    return rv_positive, rv_minus, sj, sj_abs
 
 #TODO：测试新方法的正确性
 '''计算的方法不一定有问题，但是要写09-15的data和16-21的data的区分'''
@@ -300,7 +302,7 @@ def calculRV(price_data, type = None,window='daily', DeltaT='1min', night=True, 
 
     if type is not None:
 
-        rv_positive, rv_minus, sj = calculRVplusminus(logreturn_positive, logreturn_minus, i)
+        rv_positive, rv_minus, sj, sj_abs = calculRVplusminus(logreturn_positive, logreturn_minus, i)
 
         # 移到了计算的函数中
         # RV.columns = ['Daily RV']
@@ -312,6 +314,7 @@ def calculRV(price_data, type = None,window='daily', DeltaT='1min', night=True, 
             'RV+': (rv_positive, RV),
             'RV-': (rv_minus, RV),
             'SJ': (sj, RV),
+            'SJ_abs': (sj_abs, RV)
         }
         return output_mapping[type]
 

@@ -1,5 +1,5 @@
 import pandas as pd
-import testhar_svr
+import main
 
 # loading data
 
