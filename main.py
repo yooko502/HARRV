@@ -165,15 +165,15 @@ def run_n_times(n, model_type, observation, num_generations, cross_validation, o
     for j in range(n):
         #TODO：print 一些东西增加监听功能
         print('*'*50)
-        print(f'run {j+1} times for model {model_type} on risk measure {other_type}')
+        print(f'on observation:{observation},run {j+1} times for model {model_type} on risk measure {other_type}')
         result_all[j], time_used[j] = run_har_svr(RV=RV, other_y=other_y, other_type=other_type,
                                                   observation=observation, model_type=model_type,times=j,
                                                   num_generations=num_generations, cross_validation=cross_validation)
         result_all[j].columns = ['Number of times {}'.format(j)]
         print('*'*50)
-        print(f'{j+1} times for model {model_type} is done. Risk measure {other_type}')
+        print(f'on observation:{observation},{j+1} times for model {model_type} is done. Risk measure {other_type}')
         end = time.time()
-        print(f'already used {end-start} seconds for model {model_type} on risk measure {other_type}')
+        print(f'on observation:{observation},already used {end-start} seconds for model {model_type} on risk measure {other_type}')
     # calculate the mean and variance of each day of n times run.
 
     maxmum_val['model'.format(model_type)] = result_all.max(axis=1)
@@ -230,7 +230,8 @@ def plot_result(statistics_result, maximum_val, minimum_val, RV, model_type, har
 
     risk_measure = measure
     plt.savefig('Result/{}/{}/{}/{}_har_svr_model{}.png'.format(risk_measure, run_type, cross_validation, run_type, model_type))
-    plt.savefig('Result/{}/{}/{}/{}_har_svr_model{}.eps'.format(risk_measure, run_type, cross_validation, run_type, model_type))
+    #  eps格式容易出错，先取消掉
+    #  plt.savefig('Result/{}/{}/{}/{}_har_svr_model{}.eps'.format(risk_measure, run_type, cross_validation, run_type, model_type))
 '''
 calculate the error function between statistics_result['mean'] and RV, 
 and save the result by one file in Result folder.
