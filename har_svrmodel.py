@@ -88,7 +88,7 @@ class HARSVRmodel():
         :param sol_per_pop :每一个世代有多少个备选
 
         '''
-        other_type_set = ['RV+', 'RV-', 'SJ', None]
+        other_type_set = ['RV+', 'RV-', 'SJ', None, 'SJ_abs']
         if other_type not in other_type_set:
             raise ValueError('other_type must be in {}'.format(other_type_set))
 

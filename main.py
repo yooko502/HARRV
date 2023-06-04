@@ -165,15 +165,15 @@ def run_n_times(n, model_type, observation, num_generations, cross_validation, o
     for j in range(n):
         #TODO：print 一些东西增加监听功能
         print('*'*50)
-        print(f'run {j+1} times for model {model_type} on risk measure {other_type}')
+        print(f'on observation:{observation},run {j+1} times for model {model_type} on risk measure {other_type}')
         result_all[j], time_used[j] = run_har_svr(RV=RV, other_y=other_y, other_type=other_type,
                                                   observation=observation, model_type=model_type,times=j,
                                                   num_generations=num_generations, cross_validation=cross_validation)
         result_all[j].columns = ['Number of times {}'.format(j)]
         print('*'*50)
-        print(f'{j+1} times for model {model_type} is done. Risk measure {other_type}')
+        print(f'on observation:{observation},{j+1} times for model {model_type} is done. Risk measure {other_type}')
         end = time.time()
-        print(f'already used {end-start} seconds for model {model_type} on risk measure {other_type}')
+        print(f'on observation:{observation},already used {end-start} seconds for model {model_type} on risk measure {other_type}')
     # calculate the mean and variance of each day of n times run.
 
     maxmum_val['model'.format(model_type)] = result_all.max(axis=1)
@@ -226,6 +226,8 @@ def plot_result(statistics_result, maximum_val, minimum_val, RV, model_type, har
     RV = RV.shift(-1)[RV.index.isin(statistics_result['mean'].index)]
     ax.plot(RV, label='Real Value')
     ax.legend()
+    plt.tight_layout()
+
     risk_measure = measure
     plt.savefig('Result/{}/{}/{}/{}_har_svr_model{}.png'.format(risk_measure, run_type, cross_validation, run_type, model_type))
     plt.savefig('Result/{}/{}/{}/{}_har_svr_model{}.eps'.format(risk_measure, run_type, cross_validation, run_type, model_type))
@@ -370,41 +372,43 @@ def main(observation, run_times, num_generations, run_type, cross_validation, ot
                                                                                       other_y=other_y, other_type=other_type,
                                                                                       num_generations=num_generations)
         if other_type is None:
-            risk_measure = 'RV'
+            risk_type = 'RV'
         else:
-            risk_measure = other_type
+            risk_type = other_type
         forecasting_result.to_csv('Result/{}/{}/{}/{}_har_svr_forecast_result_model{}.csv'.\
-                                  format(risk_measure, run_type, cross_validation, run_type, i))
+                                  format(risk_type, run_type, cross_validation, run_type, i))
         statistics_result['mean'].to_csv('Result/{}/{}/{}/{}_har_svr_forecast_mean_model{}.csv'.\
-                                         format(risk_measure, run_type, cross_validation, run_type, i))
+                                         format(risk_type, run_type, cross_validation, run_type, i))
         statistics_result['var'].to_csv('Result/{}/{}/{}/{}_har_svr_forecast_var_model{}.csv'.\
-                                        format(risk_measure, run_type, cross_validation, run_type, i))
+                                        format(risk_type, run_type, cross_validation, run_type, i))
         maximum_val.to_csv('Result/{}/{}/{}/{}_har_svr_forecast_max_model{}.csv'.\
-                           format(risk_measure, run_type, cross_validation, run_type, i))
+                           format(risk_type, run_type, cross_validation, run_type, i))
         minimum_val.to_csv('Result/{}/{}/{}/{}_har_svr_forecast_min_model{}.csv'.\
-                           format(risk_measure, run_type, cross_validation, run_type, i))
+                           format(risk_type, run_type, cross_validation, run_type, i))
 
-        error_function(statistics_result, RV, i, measure=risk_measure, run_type=run_type, cross_validation=cross_validation)
+        error_function(statistics_result, RV, i, measure=risk_type, run_type=run_type, cross_validation=cross_validation)
         all_result = pd.concat([all_result, statistics_result['mean']], axis=1)
-        error_function_each_day(forecasting_result, RV, i, measure=risk_measure, run_type=run_type,
+        error_function_each_day(forecasting_result, RV, i, measure=risk_type, run_type=run_type,
                                 cross_validation=cross_validation)
-        plot_result(statistics_result, maximum_val, minimum_val, RV, i, har_result, measure=risk_measure,
+        plot_result(statistics_result, maximum_val, minimum_val, RV, i, har_result, measure=risk_type,
                     run_times=run_times, cross_validation=cross_validation, num_generations=num_generations)
-
 
     all_result.columns = model_label
     all_result = all_result.dropna()
     if other_type is None:
-        risk_measure = 'RV'
+        risk_type2 = 'RV'
     else:
-        risk_measure = other_type
-    all_result.to_csv('Result/{}/all_result_for_test_mcs.csv'.format(risk_measure))
+        risk_type2 = other_type
+    all_result.to_csv('Result/{}/all_result_for_test_mcs.csv'.format(risk_type2))
     # 计算HAR误差
-    calculate_har_error(har_result, RV, measure=risk_measure, run_type=run_type, cross_validation=cross_validation)
+    calculate_har_error(har_result, RV, measure=risk_type2, run_type=run_type, cross_validation=cross_validation)
     # 计算MCS
+    print('MCS start ...')
     MCS_result = tm.main(all_result, RV)
+    print('MCS end ...')
     print('MCS_result is {}'.format(MCS_result))
-    MCS_result.to_csv('Result/{}/{}/{}/{}_MCS_result.csv'.format(risk_measure, run_type, cross_validation, run_type))
+
+    MCS_result.to_csv('Result/{}/{}/{}/{}_MCS_result.csv'.format(risk_type2, run_type, cross_validation, run_type))
 
     print('Two type HAR-SVR model both end and time used is {} seconds'.format(time.time()-start))
     plt.show()
@@ -414,15 +418,14 @@ def main(observation, run_times, num_generations, run_type, cross_validation, ot
 
 if __name__ == '__main__':
 
-    measure_list = ['SJ']  # SJ的qlike没办法计算，同时harmodel的结果有问题，暂时去掉
+    measure_list = [None, 'RV+', 'RV-', 'SJ_abs']  # SJ的qlike没办法计算，同时harmodel的结果有问题，暂时去掉
     system_name = 'mac'
     # 这趟运行的是用来干什么的，test代表这趟只是随便跑的测试，0915表示跑的是2009-2015的data
     run_type = '1622'
 
     # rm = result mcs
-    all_rm_result = pd.DataFrame()  # 用来把所有的训练集下的所有模型的预测结果都放在一起，然后用MCS来比较不同风险测度不同训练集下一共48个模型的预测能力
-    MCS_result_all = pd.DataFrame()  # 用来把所有的MCS结果放在一起保存
-    all_rm_result_each_obser = pd.DataFrame()  # 用来把相同训练集下的模型进行对比。比较12个模型。
+    all_rm_result = pd.DataFrame()  # 用来把所有的训练集下的所有模型的预测结果都放在一起，会从一开始逐渐累积，然后用MCS来比较不同风险测度不同训练集下一共48个模型的预测能力
+    MCS_result_all = pd.DataFrame()  # 用来把所有的MCS结果放在一起保存单独测度的MCS结果
 
     # 这里的变量用来进行不同observation间相同测度模型的结果。
 
@@ -439,8 +442,8 @@ if __name__ == '__main__':
                            'SJ_abs': result_SJ_abs}
 
     observationlist = [300, 600, 900, 1200]
-    run_times_out = 10
-    num_generations_out = 40
+    run_times_out = 1
+    num_generations_out = 1
     dataset_interval = ['0910', '0915', '1622', '0921']
     data_interval = '1622'
     data_start = 1  # 使用的data的开始点
@@ -449,6 +452,8 @@ if __name__ == '__main__':
     root_dir = '/Users/zhuoyue/Documents/PycharmProjects/HAR_RV'
     # TODO：添加一个方法来进行不同的observation循环
     for observation in observationlist:
+
+        all_rm_result_each_obser = pd.DataFrame()  # 用来把相同训练集下的模型进行对比。比较12个模型。不会累计，每个obeservation结束都会删除
         os.chdir(root_dir)  # 切换到根目录
 
         print(f"Running observation {observation}...")
@@ -507,23 +512,29 @@ if __name__ == '__main__':
             MCS_result_all = pd.concat([MCS_result_all, mcs_result], axis=1)
             all_rm_result_each_obser = pd.concat([all_rm_result_each_obser, result], axis=1)
 
-            result_each_measure[risk_measure] = pd.concat([result_each_measure[risk_measure], result], axis=1)
+            if risk_measure is None:
+                risk_type = 'RV'
+            else:
+                risk_type = risk_measure
+
+            result_each_measure[risk_type] = pd.concat([result_each_measure[risk_type], result], axis=1)
 
         all_rm_result.to_csv('Result/allresult/all_rm_result.csv')
-        MCS_result_all.to_csv('Result/allresult/MCS_result_all_individual.csv')
+        MCS_result_all.to_csv('Result/allresult/MCS_result_all_individual.csv')  # 这个只是用来保存每个训练集下每个测度的MCS结果，存在一起比较方便。
         all_rm_result_each_obser.to_csv('Result/allresult/all_rm_result_each_obser.csv')
 
-        mcs_result_all = tm.main(all_rm_result, RV)
+        mcs_result_all = tm.main(all_rm_result, RV)  # 同一个训练集下所有测度进行比较的结果,并且随着训练集改变逐渐累计结果
         mcs_result_each_obser = tm.main(all_rm_result_each_obser, RV)
 
         print('mcs_result_all is {}'.format(mcs_result_all))
-        print('mcs_result_each_obser is {}'.format(mcs_result_each_obser))
 
-        del mcs_result_each_obser
+        del mcs_result_each_obser, all_rm_result_each_obser
 
         mcs_result_all.to_csv('Result/allresult/mcs_result_all.csv')
 
     for rv in result_each_measure.keys():
+        if result_each_measure[rv].empty:
+            continue
         mcs_each_measure = tm.main(result_each_measure[rv], RV)
         result_each_measure[rv].to_csv(f'Result/allresult/mcs_result_each_measure_{rv}.csv')
 
