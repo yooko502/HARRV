@@ -36,7 +36,7 @@ class HARX:
         :param observation: 需要用多少天的数据量来建立数据
         :param step: Number of steps to forecast.
         '''
-        other_type_set = ['RV+', 'RV-', 'SJ', None]
+        other_type_set = ['RV+', 'RV-', 'SJ', None, 'SJ_abs']
         if other_type not in other_type_set:
             raise ValueError('other_type must be in {}'.format(other_type_set))
 

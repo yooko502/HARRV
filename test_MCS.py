@@ -130,13 +130,18 @@ def mcs_compute(error):
 
 
 def main(y_pred, y_r):
+    print('start:\n')
     forecast, y, forecast_columns = match_data(y_pred, y_r)
+
+    print('match data finished\n')
 
     error_mse = cal_error_mse(forecast, y)
     error_mae = cal_error_mae(forecast, y)
     error_qlike = cal_error_qlike(forecast, y)
     error_mape = cal_error_mape(forecast, y)
     error_smape = cal_error_smape(forecast, y)
+
+    print('calculate loss finished\n')
 
     mcs_mse = MCS(error_mse, size=0.05, method='max')
     mcs_mae = MCS(error_mae, size=0.05, method='max')
@@ -149,6 +154,8 @@ def main(y_pred, y_r):
     mcs_qlike.compute()
     mcs_mape.compute()
     mcs_smape.compute()
+
+    print('mcs compute finished\n')
 
     mcs_columns = ['mse', 'mae', 'Q-LIKE', 'mape', 'samape']
     mcs_pvalues = [mcs_mse.pvalues, mcs_mae.pvalues, mcs_qlike.pvalues, mcs_mape.pvalues, mcs_smape.pvalues]
