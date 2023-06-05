@@ -459,9 +459,8 @@ if __name__ == '__main__':
             else:
                 other_y, RV = bf.calculRV(all_data, interval=data_interval, type=risk_measure)
                 other_y.index = pd.to_datetime(other_y.index, format='%Y%m%d')
-
+                other_y = other_y.iloc[max(observationlist) - observation:, :]
             '''根据不同的observation，统一后面的测试集的时间区间'''
-            other_y = other_y.iloc[max(observationlist) - observation:, :]
             RV = RV.iloc[max(observationlist) - observation:, :]
 
             # ------实际运行时候的指令
@@ -486,7 +485,8 @@ if __name__ == '__main__':
                                       num_generations=num_generations_out,
                                       cross_validation=cross_validation_out,
                                       run_type=run_type)
-
+            #  in this place , the all_rm_result and MCS result all should be deleted when every loop ends.
+            #  otherwise, the result will be added to the previous result.
             all_rm_result = pd.concat([all_rm_result, result], axis=1)
             MCS_result_all = pd.concat([MCS_result_all, mcs_result], axis=1)
         all_rm_result.to_csv('Result/allresult/all_rm_result.csv')
