@@ -419,7 +419,7 @@ def main(observation, run_times, num_generations, run_type, cross_validation, ot
 if __name__ == '__main__':
 
     measure_list = [None, 'RV+', 'RV-', 'SJ_abs']  # SJ的qlike没办法计算，同时harmodel的结果有问题，暂时去掉
-    system_name = 'mac'
+    system_name = 'windows'
     # 这趟运行的是用来干什么的，test代表这趟只是随便跑的测试，0915表示跑的是2009-2015的data
     run_type = '1622'
 
