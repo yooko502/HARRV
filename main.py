@@ -525,6 +525,7 @@ if __name__ == '__main__':
 
         mcs_result_all = tm.main(all_rm_result, RV)  # 同一个训练集下所有测度进行比较的结果,并且随着训练集改变逐渐累计结果
         mcs_result_each_obser = tm.main(all_rm_result_each_obser, RV)
+        mcs_result_each_obser.to_csv('Result/allresult/mcs_result_each_obser.csv')
 
         print('mcs_result_all is {}'.format(mcs_result_all))
 
